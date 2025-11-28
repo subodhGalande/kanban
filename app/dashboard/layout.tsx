@@ -2,7 +2,7 @@ import prisma from "@/lib/db";
 import { verifyToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
-import LogoutButton from "./logoutButton";
+import LogoutButton from "@/components/logoutButton";
 
 export default async function DashboardLayout({
   children,
