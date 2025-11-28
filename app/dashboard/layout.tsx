@@ -37,8 +37,8 @@ export default async function DashboardLayout({
   const avatarColor = colors[user.name.length % colors.length];
 
   return (
-    <div className="min-h-screen flex flex-col justify-between font-sans  bg-gray-50">
-      <header className="w-full bg-white border-b border-b-text/25 px-4 py-2 md:px-6 flex flex-row items-center justify-between gap-3 shadow-sm">
+    <div className="min-h-screen flex flex-col justify-between font-sans  bg-white">
+      <header className="w-full bg-white border-b border-b-text/25 px-4 py-2 md:px-8 flex flex-row items-center justify-between gap-3 shadow-sm">
         <LogoutButton />
         <div className="flex  items-center justify-end gap-2 w-fit md:w-auto">
           <span className="text-sm font-medium text-heading">{user.name}</span>

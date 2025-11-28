@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-export default function TaskCard({ task, onEdit, onDelete }) {
+export default function TaskCard({ task, onEdit, onDelete }: any) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: task.id,
@@ -20,7 +20,7 @@ export default function TaskCard({ task, onEdit, onDelete }) {
   const [openMenu, setOpenMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Close dropdown on outside click
+  // close dropdown on outside click
   useEffect(() => {
     function handleClick(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -37,32 +37,47 @@ export default function TaskCard({ task, onEdit, onDelete }) {
       {...attributes}
       {...listeners}
       style={style}
-      className="p-3 border rounded bg-white shadow-sm relative"
+      className=" p-3 font-sans rounded-xl bg-white shadow-sm relative cursor-grab active:cursor-grabbing touch-none"
     >
-      <div className="flex justify-between items-start">
-        <h3 className="font-medium">{task.title}</h3>
+      <div className="flex -mt-2 justify-between items-center">
+        <div className="mt-2 mb-2">
+          <div
+            className={`
+            text-[10px] px-2 py-1 rounded font-medium
+            ${
+              task.priority === "HIGH"
+                ? "bg-danger/15 text-danger"
+                : task.priority === "MEDIUM"
+                ? "bg-warning/15 text-warning "
+                : "bg-success/15 text-success "
+            }
+          `}
+          >
+            {task.priority}
+          </div>
+        </div>
 
-        {/* Three dot menu */}
+        {/* Menu */}
         <div className="relative" ref={menuRef}>
           <button
             onClick={(e) => {
               e.stopPropagation();
               setOpenMenu((prev) => !prev);
             }}
-            className="px-2 py-0 text-gray-600 text-xl leading-none"
+            className="p-1 text-heading text-xl leading-none rounded hover:bg-gray-100"
           >
             ⋯
           </button>
 
           {openMenu && (
-            <div className="absolute right-0 mt-1 w-28 bg-white border rounded shadow-md z-20">
+            <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-xl z-30">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpenMenu(false);
                   onEdit(task);
                 }}
-                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                className="block w-full text-left px-3 py-2 text-sm hover:bg-card-background"
               >
                 Edit
               </button>
@@ -73,7 +88,7 @@ export default function TaskCard({ task, onEdit, onDelete }) {
                   setOpenMenu(false);
                   onDelete(task);
                 }}
-                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 text-red-600"
+                className="block w-full text-left px-3 py-2 text-sm hover:bg-card-background text-danger"
               >
                 Delete
               </button>
@@ -81,20 +96,8 @@ export default function TaskCard({ task, onEdit, onDelete }) {
           )}
         </div>
       </div>
-      <div className="mt-1 mb-1">
-        <span
-          className={`
-    text-[10px] px-2 py-1 rounded 
-    ${task.priority === "HIGH" ? "bg-red-100 text-red-700" : ""}
-    ${task.priority === "MEDIUM" ? "bg-yellow-100 text-yellow-700" : ""}
-    ${task.priority === "LOW" ? "bg-green-100 text-green-700" : ""}
-  `}
-        >
-          {task.priority}
-        </span>
-      </div>
-
-      <p className="text-sm text-gray-600">{task.description}</p>
+      <h3 className="font-medium mt-1 text-heading">{task.title}</h3>
+      <p className="text-xs text-text">{task.description}</p>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -59,18 +60,16 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
       return matchSearch && matchStatus;
     })
     .sort((a, b) => {
-      if (sortBy === "NEW") return 0; // newest already first
-      if (sortBy === "OLD") return 0; // optional future improvement
-
       if (sortBy === "AZ") return a.title.localeCompare(b.title);
       if (sortBy === "ZA") return b.title.localeCompare(a.title);
-
       return 0;
     });
 
+  // Pointer + Touch sensors
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 },
     })
   );
 
@@ -102,7 +101,6 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
     if (!over) return;
 
     const draggedId = active.id as string;
-
     const draggedTask = visibleTasks.find((t) => t.id === draggedId);
     if (!draggedTask) return;
 
@@ -121,16 +119,16 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
       return;
     }
 
+    // optimistic update
     setTaskList((prev) =>
       prev.map((t) => (t.id === draggedId ? { ...t, status: newStatus } : t))
     );
-
-    console.log("Sending status:", newStatus);
 
     try {
       await axios.put(`/api/tasks/${draggedId}`, { status: newStatus });
     } catch (error) {
       console.error("Failed to update task:", error);
+      // rollback
       setTaskList((prev) =>
         prev.map((t) =>
           t.id === draggedId ? { ...t, status: draggedTask.status } : t
@@ -152,7 +150,6 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   const handleDelete = async (task: Task) => {
     try {
       await axios.delete(`/api/tasks/${task.id}`);
-
       setTaskList((prev) => prev.filter((t) => t.id !== task.id));
       setDeleteTask(null);
     } catch (e) {
@@ -161,16 +158,16 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   };
 
   return (
-    <div className=" font-sans ">
-      <div className=" flex justify-between mb-2 items-center">
-        <div>
-          <h1 className="text-lg sm:text-2xl text-heading font-semibold font-sans">
-            Tasks
-          </h1>
-        </div>{" "}
+    <div className="font-sans w-full h-full">
+      {/* Header */}
+      <div className="flex justify-between mb-2 items-center">
+        <h1 className="text-lg sm:text-2xl text-heading font-semibold">
+          Tasks
+        </h1>
         <CreateTaskModal onCreate={handleAddTask} />
       </div>
 
+      {/* Modals */}
       {editTask && (
         <EditTaskModal
           task={editTask}
@@ -187,13 +184,15 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
         />
       )}
 
-      <div className="flex justify-between mb-4  items-center  rounded-lg">
-        <div className="flex items-center">
-          {/* Filter Icon Select */}
-          <div className="relative hover:bg-text/25 rounded-sm duration-150 w-7 h-7 hover:scale-105">
+      {/* Toolbar */}
+      <div className="flex justify-between mb-4 items-center rounded-lg">
+        {/* Icons */}
+        <div className="flex items-center gap-3">
+          {/* Filter */}
+          <div className="relative hover:bg-text/25 rounded-sm duration-150 w-8 h-8 flex items-center justify-center">
             <ListFilter
-              size={15}
-              className="absolute inset-0 m-auto text-gray-600 pointer-events-none"
+              size={16}
+              className="text-gray-600 pointer-events-none"
             />
             <select
               value={filterStatus}
@@ -208,11 +207,11 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
             </select>
           </div>
 
-          {/* Sort Icon Select */}
-          <div className="relative w-7 h-7  hover:bg-text/25 rounded-sm duration-150 hover:scale-105">
+          {/* Sort */}
+          <div className="relative hover:bg-text/25 rounded-sm duration-150 w-8 h-8 flex items-center justify-center">
             <ArrowUpDown
-              size={15}
-              className="absolute  inset-0 m-auto text-gray-600 pointer-events-none"
+              size={16}
+              className="text-gray-600 pointer-events-none"
             />
             <select
               value={sortBy}
@@ -227,7 +226,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
           </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Search */}
         <div className="relative">
           <Search
             size={18}
@@ -237,8 +236,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search tasks..."
-            className="pl-10 pr-4  w-64 bg-gray-100 border border-gray-300 rounded-lg 
-                 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            className="pl-10 pr-4 w-56 sm:w-64 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
           />
         </div>
       </div>
@@ -249,11 +247,15 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
         onDragEnd={onDragEnd}
         onDragStart={onDragStart}
       >
-        <div className="grid grid-cols-4 gap-4">
+        {/* Responsive Columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 transition-all">
           {(Object.keys(columns) as TaskStatus[]).map((status) => (
             <Column key={status} id={status}>
-              <h2 className="font-semibold text-lg mb-4">
+              <h2 className="font-semibold text-lg mb-4 flex justify-between items-center gap-2">
                 {columnTitles[status]}
+                <span className="text-sm text-text/65  px-2 py-0.5 rounded-full">
+                  {columns[status].length}
+                </span>
               </h2>
 
               <SortableContext
@@ -278,9 +280,16 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
             </Column>
           ))}
         </div>
+
         <DragOverlay>
           {activeTask ? (
-            <TaskCard onDelete={() => {}} onEdit={() => {}} task={activeTask} />
+            <div className="scale-105 shadow-2xl">
+              <TaskCard
+                task={activeTask}
+                onEdit={() => {}}
+                onDelete={() => {}}
+              />
+            </div>
           ) : null}
         </DragOverlay>
       </DndContext>
