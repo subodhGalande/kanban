@@ -9,7 +9,6 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    console.log("🔵 TASK ID FROM PARAMS:", id);
 
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
@@ -21,19 +20,17 @@ export async function PUT(
 
     const payload = await verifyToken(token);
     if (!payload?.id) {
-      console.log("Invalid token payload");
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     const userId = payload.id as string;
-    console.log("✅ User ID:", userId);
 
     const body = await req.json();
-    console.log("Request body:", body);
 
     const data: any = {};
     if (body.title !== undefined) data.title = body.title;
     if (body.description !== undefined) data.description = body.description;
     if (body.status !== undefined) data.status = body.status;
+    if (body.priority !== undefined) data.priority = body.priority;
 
     const existing = await prisma.task.findUnique({
       where: { id },

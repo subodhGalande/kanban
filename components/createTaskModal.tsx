@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const TaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
 });
 
 type TaskForm = z.infer<typeof TaskSchema>;
@@ -23,11 +24,17 @@ export default function CreateTaskModal({ onCreate }) {
     formState: { errors, isSubmitting },
   } = useForm<TaskForm>({
     resolver: zodResolver(TaskSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      priority: "MEDIUM",
+    },
   });
 
   const onSubmit = async (data: TaskForm) => {
     try {
       const res = await axios.post("/api/tasks", data);
+      console.log(data);
       if (res.status === 201) {
         onCreate(res.data.task);
         reset();
@@ -41,7 +48,14 @@ export default function CreateTaskModal({ onCreate }) {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          reset({
+            title: "",
+            description: "",
+            priority: "MEDIUM",
+          });
+          setOpen(true);
+        }}
         className="px-4 py-2 bg-blue-600 text-white rounded"
       >
         Create Task
@@ -75,6 +89,18 @@ export default function CreateTaskModal({ onCreate }) {
                     {errors.description.message}
                   </p>
                 )}
+              </div>
+
+              <div>
+                <select
+                  {...register("priority")}
+                  defaultValue="MEDIUM"
+                  className="border p-2 rounded w-full"
+                >
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
               </div>
 
               <div className="flex justify-end gap-2">

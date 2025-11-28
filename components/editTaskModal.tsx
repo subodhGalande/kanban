@@ -5,10 +5,12 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Priority } from "@/app/generated/prisma/enums";
 
 const EditSchema = z.object({
   title: z.string().min(1, "Title required"),
   description: z.string().min(1, "Description required"),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
 });
 
 type EditForm = z.infer<typeof EditSchema>;
@@ -29,6 +31,7 @@ export default function EditTaskModal({ task, onClose, onSave }) {
       reset({
         title: task.title,
         description: task.description,
+        priority: task.priority,
       });
     }
   }, [task, reset]);
@@ -74,6 +77,15 @@ export default function EditTaskModal({ task, onClose, onSave }) {
               </p>
             )}
           </div>
+
+          <select
+            {...register("priority")}
+            className="border p-2 rounded w-full"
+          >
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
 
           <div className="flex justify-end gap-2">
             <button

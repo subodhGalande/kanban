@@ -81,6 +81,18 @@ export default function TaskCard({ task, onEdit, onDelete }) {
           )}
         </div>
       </div>
+      <div className="mt-1 mb-1">
+        <span
+          className={`
+    text-[10px] px-2 py-1 rounded 
+    ${task.priority === "HIGH" ? "bg-red-100 text-red-700" : ""}
+    ${task.priority === "MEDIUM" ? "bg-yellow-100 text-yellow-700" : ""}
+    ${task.priority === "LOW" ? "bg-green-100 text-green-700" : ""}
+  `}
+        >
+          {task.priority}
+        </span>
+      </div>
 
       <p className="text-sm text-gray-600">{task.description}</p>
     </div>

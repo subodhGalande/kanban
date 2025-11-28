@@ -23,12 +23,14 @@ import EditTaskModal from "./editTaskModal";
 import DeleteTaskModal from "./deleteTaskModal";
 
 type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
+type Priority = "LOW" | "MEDIUM" | "HIGH";
 
 interface Task {
   id: string;
   title: string;
   description: string;
   status: TaskStatus;
+  priority: Priority;
 }
 
 interface KanbanBoardProps {
