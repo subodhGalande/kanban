@@ -5,6 +5,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 
 const TaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -14,7 +15,7 @@ const TaskSchema = z.object({
 
 type TaskForm = z.infer<typeof TaskSchema>;
 
-export default function CreateTaskModal({ onCreate }) {
+export default function CreateTaskModal({ onCreate }: any) {
   const [open, setOpen] = useState(false);
 
   const {
@@ -56,13 +57,14 @@ export default function CreateTaskModal({ onCreate }) {
           });
           setOpen(true);
         }}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
+        className="px-3 py-1 font-sans text-sm sm:text-base hover:scale-105 duration-150 font-medium bg-heading justify-center items-center gap-1 rounded-lg flex text-white"
       >
-        Create Task
+        <Plus className="w-5 h-5" />
+        Add task
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center">
+        <div className="fixed font-sans inset-0 z-[9999] bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded w-[400px] shadow-lg">
             <h2 className="text-xl font-semibold mb-4">New Task</h2>
 

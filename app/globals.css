@@ -3,7 +3,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #595762;
+  --foreground: #343434;
 }
 
 @theme inline {
@@ -14,7 +14,7 @@
   --font-mono: var(--font-geist-mono);
   --color-primary: #9233c5;
   --color-heading: var(--foreground);
-  --color-text: #899499;
+  --color-text: #797979;
   --color-card-background: #f0f0f5;
   --color-warning: #eaa74e;
   --color-danger: #db6060;

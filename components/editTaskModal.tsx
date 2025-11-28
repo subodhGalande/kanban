@@ -15,7 +15,7 @@ const EditSchema = z.object({
 
 type EditForm = z.infer<typeof EditSchema>;
 
-export default function EditTaskModal({ task, onClose, onSave }) {
+export default function EditTaskModal({ task, onClose, onSave }: any) {
   const {
     register,
     handleSubmit,

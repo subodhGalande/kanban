@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -12,8 +13,11 @@ export default function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout} className="text-sm text-red-600 underline">
-      Logout
+    <button
+      onClick={handleLogout}
+      className=" w-10 h-10 rounded-full hover:scale-105 hover:bg-text/5 duration-150 cursor-grab "
+    >
+      <LogOut size={18} className="text-text w-10 h-5" />
     </button>
   );
 }

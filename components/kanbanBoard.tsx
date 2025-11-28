@@ -21,6 +21,7 @@ import Column from "./column";
 import { DragOverlay } from "@dnd-kit/core";
 import EditTaskModal from "./editTaskModal";
 import DeleteTaskModal from "./deleteTaskModal";
+import { Search, ArrowUpDown, ListFilter } from "lucide-react";
 
 type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
 type Priority = "LOW" | "MEDIUM" | "HIGH";
@@ -160,8 +161,15 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <CreateTaskModal onCreate={handleAddTask} />
+    <div className=" font-sans ">
+      <div className=" flex justify-between mb-2 items-center">
+        <div>
+          <h1 className="text-lg sm:text-2xl text-heading font-semibold font-sans">
+            Tasks
+          </h1>
+        </div>{" "}
+        <CreateTaskModal onCreate={handleAddTask} />
+      </div>
 
       {editTask && (
         <EditTaskModal
@@ -179,37 +187,60 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
         />
       )}
 
-      {/* Search / Filter / Sort Bar */}
-      <div className="flex items-center gap-3">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tasks..."
-          className="border p-2 rounded w-64"
-        />
+      <div className="flex justify-between mb-4  items-center  rounded-lg">
+        <div className="flex items-center">
+          {/* Filter Icon Select */}
+          <div className="relative hover:bg-text/25 rounded-sm duration-150 w-7 h-7 hover:scale-105">
+            <ListFilter
+              size={15}
+              className="absolute inset-0 m-auto text-gray-600 pointer-events-none"
+            />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as any)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+              <option value="ALL">All</option>
+              <option value="TODO">To Do</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="REVIEW">Review</option>
+              <option value="DONE">Done</option>
+            </select>
+          </div>
 
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as any)}
-          className="border p-2 rounded"
-        >
-          <option value="ALL">All</option>
-          <option value="TODO">To Do</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="REVIEW">Review</option>
-          <option value="DONE">Done</option>
-        </select>
+          {/* Sort Icon Select */}
+          <div className="relative w-7 h-7  hover:bg-text/25 rounded-sm duration-150 hover:scale-105">
+            <ArrowUpDown
+              size={15}
+              className="absolute  inset-0 m-auto text-gray-600 pointer-events-none"
+            />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+              <option value="NEW">Newest</option>
+              <option value="OLD">Oldest</option>
+              <option value="AZ">A → Z</option>
+              <option value="ZA">Z → A</option>
+            </select>
+          </div>
+        </div>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as any)}
-          className="border p-2 rounded"
-        >
-          <option value="NEW">Newest</option>
-          <option value="OLD">Oldest</option>
-          <option value="AZ">A → Z</option>
-          <option value="ZA">Z → A</option>
-        </select>
+        {/* Search Bar */}
+        <div className="relative">
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+          />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search tasks..."
+            className="pl-10 pr-4  w-64 bg-gray-100 border border-gray-300 rounded-lg 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+          />
+        </div>
       </div>
 
       <DndContext

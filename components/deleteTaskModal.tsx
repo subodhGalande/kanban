@@ -1,6 +1,6 @@
 "use client";
 
-export default function DeleteTaskModal({ task, onConfirm, onCancel }) {
+export default function DeleteTaskModal({ task, onConfirm, onCancel }: any) {
   if (!task) return null;
 
   return (

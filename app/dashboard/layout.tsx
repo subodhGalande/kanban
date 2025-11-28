@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { verifyToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
+import UserMenu from "@/components/userMenu";
 import LogoutButton from "@/components/logoutButton";
 
 export default async function DashboardLayout({
@@ -31,21 +32,24 @@ export default async function DashboardLayout({
   if (!user) {
     redirect("/login", RedirectType.replace);
   }
+
+  const colors = ["#595762", "#899499", "#f0f0f5", "#eaa74e", "#db6060"];
+  const avatarColor = colors[user.name.length % colors.length];
+
   return (
-    <div>
-      <header className="p-4 border-b flex justify-between">
-        <div className="font-semibold text-lg">Dashboard</div>
+    <div className="min-h-screen flex flex-col justify-between font-sans  bg-gray-50">
+      <header className="w-full bg-white border-b border-b-text/25 px-4 py-2 md:px-6 flex flex-row items-center justify-between gap-3 shadow-sm">
         <LogoutButton />
-        {user ? (
-          <div className="text-sm">
-            Logged in as <span className="font-medium">{user.name}</span>
-          </div>
-        ) : (
-          <div className="text-sm text-red-600">Not logged in</div>
-        )}
+        <div className="flex  items-center justify-end gap-2 w-fit md:w-auto">
+          <span className="text-sm font-medium text-heading">{user.name}</span>
+
+          <UserMenu name={user.name} avatarColor={avatarColor} />
+        </div>
       </header>
 
-      <main className="p-6">{children}</main>
+      <main className="flex-1 w-full px-4 py-6 md:px-6 lg:px-10">
+        {children}
+      </main>
     </div>
   );
 }
