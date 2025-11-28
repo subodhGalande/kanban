@@ -40,6 +40,30 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTask, setDeleteTask] = useState<Task | null>(null);
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"ALL" | TaskStatus>("ALL");
+  const [sortBy, setSortBy] = useState<"NEW" | "OLD" | "AZ" | "ZA">("NEW");
+
+  const visibleTasks = taskList
+    .filter((t) => {
+      const matchSearch =
+        t.title.toLowerCase().includes(search.toLowerCase()) ||
+        t.description.toLowerCase().includes(search.toLowerCase());
+
+      const matchStatus =
+        filterStatus === "ALL" ? true : t.status === filterStatus;
+
+      return matchSearch && matchStatus;
+    })
+    .sort((a, b) => {
+      if (sortBy === "NEW") return 0; // newest already first
+      if (sortBy === "OLD") return 0; // optional future improvement
+
+      if (sortBy === "AZ") return a.title.localeCompare(b.title);
+      if (sortBy === "ZA") return b.title.localeCompare(a.title);
+
+      return 0;
+    });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -54,7 +78,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
     DONE: [],
   };
 
-  taskList.forEach((t) => columns[t.status].push(t));
+  visibleTasks.forEach((t) => columns[t.status].push(t));
 
   const columnTitles: Record<TaskStatus, string> = {
     TODO: "To Do",
@@ -65,7 +89,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
 
   const onDragStart = (event: DragStartEvent) => {
     const id = event.active.id;
-    const task = taskList.find((t) => t.id === id);
+    const task = visibleTasks.find((t) => t.id === id);
     setActiveTask(task || null);
   };
 
@@ -76,7 +100,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
 
     const draggedId = active.id as string;
 
-    const draggedTask = taskList.find((t) => t.id === draggedId);
+    const draggedTask = visibleTasks.find((t) => t.id === draggedId);
     if (!draggedTask) return;
 
     let newStatus: TaskStatus;
@@ -84,7 +108,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
     if (["TODO", "IN_PROGRESS", "REVIEW", "DONE"].includes(over.id as string)) {
       newStatus = over.id as TaskStatus;
     } else {
-      const targetTask = taskList.find((t) => t.id === over.id);
+      const targetTask = visibleTasks.find((t) => t.id === over.id);
       if (!targetTask) return;
       newStatus = targetTask.status;
     }
@@ -152,6 +176,39 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
           onConfirm={() => handleDelete(deleteTask)}
         />
       )}
+
+      {/* Search / Filter / Sort Bar */}
+      <div className="flex items-center gap-3">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search tasks..."
+          className="border p-2 rounded w-64"
+        />
+
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as any)}
+          className="border p-2 rounded"
+        >
+          <option value="ALL">All</option>
+          <option value="TODO">To Do</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="REVIEW">Review</option>
+          <option value="DONE">Done</option>
+        </select>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as any)}
+          className="border p-2 rounded"
+        >
+          <option value="NEW">Newest</option>
+          <option value="OLD">Oldest</option>
+          <option value="AZ">A → Z</option>
+          <option value="ZA">Z → A</option>
+        </select>
+      </div>
 
       <DndContext
         sensors={sensors}
