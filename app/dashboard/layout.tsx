@@ -53,3 +53,6 @@ export default async function DashboardLayout({
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
