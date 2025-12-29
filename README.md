@@ -2,7 +2,7 @@
 
 [![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/subodhGalande/eb-kanban)
 
-EB Kanban is a full-stack, responsive Kanban board application designed for productivity. It features a clean, minimal interface with robust functionality, including user authentication, task management with drag-and-drop, and real-time UI updates. The project is built with a modern tech stack, emphasizing clean code and maintainability.
+Kanban is a full-stack, responsive Kanban board application designed for productivity. It features a clean, minimal interface with robust functionality, including user authentication, task management with drag-and-drop, and real-time UI updates. The project is built with a modern tech stack, emphasizing clean code and maintainability.
 
 ## Features
 

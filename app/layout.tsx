@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EB-Kanban Board",
-  description: "engineerBabu assignment",
+  title: "Kanban Board",
+  description: "personal project",
 };
 
 export default function RootLayout({
